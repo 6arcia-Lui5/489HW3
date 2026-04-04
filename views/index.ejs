@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
-    <div class="navbar1" hidden>
+    <div class="navbar1">
         <a class="nav-item" href="https://www.google.com">Home</a>
         <a class="nav-item"href="https://www.google.com">About</a>
         <a class="nav-item"href="https://www.google.com">Categories</a>
@@ -27,13 +27,24 @@
             </div>
         </div>
         <hr>
-        <form method="post" action="/sign" class="petition-form" id="petition-form" onsubmit="handleSubmit(event)">
+        <% if (errors && errors.length > 0) { %>
+            <div class="error-msg" style="display: block;">
+                <ul>
+                    <% errors.forEach(err => { %>
+                        <li><%= err %></li>
+                    <% }) %>
+                </ul>
+            </div>
+        <% } else { %>
+            <span class="error-msg" style="display: none;"></span>
+        <% } %>
+        <form method="post" action="/" class="petition-form" id="petition-form">
             <div class="heading2">Sign the Petition</div>
-            <input class="information-box" type="text" id="name" placeholder="Your Name">
-            <input class="information-box" type="text" id="email" placeholder="Your Email">
-            <input class="information-box" type="text" id="city" placeholder="City">
-            <input class="information-box" type="text" id = "state" placeholder="State (e.g., WA)">
-            <select name= "signer" id="signer" class="information-box" onchange="signerChanged(this)">
+            <input class="information-box" type="text" id="name" name="name" placeholder="Your Name" value="<%= formData.name || '' %>">
+            <input class="information-box" type="text" id="email" name="email" placeholder="Your Email" value="<%= formData.email || '' %>">
+            <input class="information-box" type="text" id="city" name="city" placeholder="City" value="<%= formData.city || '' %>">
+            <input class="information-box" type="text" id = "state" name="state" placeholder="State (e.g., WA)" value="<%= formData.state || '' %>">
+            <select name= "type" id="signer" class="information-box" onchange="signerChanged(this)">
                 <option value="placeholder" disabled selected hidden>-- I am a... --</option>
                 <option value="student">Student</option>
                 <option value="faculty">Faculty/Staff</option>
@@ -60,26 +71,21 @@
                     </tr>
                 </thead>
                 <tbody id="table-body">
+                    <% signatures.forEach((sig, index) => { %>
                     <tr>
-                        <td>Alice Johnson</td>
-                        <td>Seattle</td>
-                        <td>Student</td>
+                        <td><%= sig.name %></td>
+                        <td><%= sig.city %></td>
+                        <td><%= sig.type %></td>
                         <td>
-                            <a type="button" class="more-button" data-index="0" data-toggle="modal" data-target="#userModal">
-                                more >>
+                            <a type="button"
+                            class="more-button"
+                            onclick='showDetails(<%- JSON.stringify(sig) %>)'
+                            >
+                            more >>
                             </a>
                         </td>
                     </tr>
-                    <tr>
-                        <td>Bob Smith</td>
-                        <td>Portland</td>
-                        <td>Military</td>
-                        <td>
-                            <a type="button" class="more-button" data-index="1" data-toggle="modal" data-target="#userModal">
-                                more >>
-                            </a>
-                            </td>
-                    </tr>
+                    <% }) %>
                 </tbody>
             </table>
         </div>
@@ -87,7 +93,7 @@
 <!-- Templates for signer dropdown -->
     <template id = "student-fields">
         <label>What is your academic level?</label>
-        <select name="Academic Level" id="academic-level" class="information-box signer-information">
+        <select name="academic-level" id="academic-level" class="information-box signer-information">
             <option value="placeholder" disabled selected hidden>-- Select --</option>
             <option value="freshman">Freshman</option>
             <option value="sophmore">Sophmore</option>

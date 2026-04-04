@@ -197,39 +197,35 @@ function allFieldsFilled(signerFields) {
 }
 
 
-$('#userModal').on('show.bs.modal', function (event) {
-    const button = event.relatedTarget;
-    const index = button.dataset.index;
-    const user = submittedForms[index];
+function showDetails(user) {
+  const modal = document.getElementById("userModal");
+  const modalTitle = document.getElementById("modalLabel");
+  const modalBody = modal.querySelector(".modal-body");
 
-    const modalTitle = document.getElementById("modalLabel");
-    modalTitle.textContent = "Details: " + user.name;
+  modalTitle.textContent = "Details: " + user.name;
+  modalBody.innerHTML = "";
 
-    const modalBody = this.querySelector('.modal-body');
-    modalBody.innerHTML = '';
+  const formatKey = (key) =>
+    key.replace(/[-_]/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 
-    const formatKey = (key) => key.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  for (const [key, value] of Object.entries(user)) {
 
-    for (const [key, value] of Object.entries(user)) {
-        if (key === 'signerFields' && value) {
-            for (const [sKey, sValue] of Object.entries(value)) {
-                const row = document.createElement('p');
-                row.innerHTML = `<strong style="display:inline-block; width:150px;">${formatKey(sKey)}</strong> ${sValue || '-'}`;
-                modalBody.appendChild(row);
-                const lineBreak = document.createElement("hr")
-                modalBody.appendChild(lineBreak)
-            }
-            continue;
-        }
-
-        if (typeof value === 'object') continue;
-
-        const row = document.createElement('p');
-        row.innerHTML = `<strong style="display:inline-block; width:150px;">${formatKey(key)}</strong> ${value || '-'}`;
+    if (key === "signerFields" && value) {
+      for (const [sKey, sValue] of Object.entries(value)) {
+        const row = document.createElement("p");
+        row.innerHTML = `<strong>${formatKey(sKey)}:</strong> ${sValue || "-"}`;
         modalBody.appendChild(row);
-        if (key != "comment") {
-            const lineBreak = document.createElement("hr")
-            modalBody.appendChild(lineBreak)
-        }
+      }
+      continue;
     }
-});
+
+    if (typeof value === "object") continue;
+
+    const row = document.createElement("p");
+    row.innerHTML = `<strong>${formatKey(key)}:</strong> ${value || "-"}`;
+    modalBody.appendChild(row);
+  }
+
+  // Show Bootstrap modal manually
+  $('#userModal').modal('show');
+}
