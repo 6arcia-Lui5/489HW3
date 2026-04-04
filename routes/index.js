@@ -29,8 +29,6 @@ const signatures = [
     }
 ];
 
-let idCounter = 3;
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', {
@@ -86,7 +84,7 @@ router.post('/', function(req, res, next) {
   const errors = [];
 
   //checks
-  if (!name || name.trim().length < 5) {
+  if (!name || name.trim().length < 4) {
     errors.push("Please enter a name greater than 5 characters.");
   }
 
